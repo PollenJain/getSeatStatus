@@ -1,6 +1,7 @@
 package com.example.paragjai.firestore_recycler_view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,6 +17,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
 
     Context context;
     ArrayList<RouteDetailsFromFirestore> routeDetailsFromFirestoreArrayList_;
+
     public int  lastSelectedPosition=-1;
 
 
@@ -24,6 +26,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
         this.context = context;
         this.routeDetailsFromFirestoreArrayList_ = routeDetailsFromFirestoreArrayList;
     }
+
 
     @NonNull
     @Override
@@ -47,13 +50,15 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     if (lastSelectedPosition != -1) {
-                        //                        RadioButton rb = (RadioButton) ((MainActivity) context).linearLayoutManager.getChildAt(lastSelectedPosition).findViewById(R.id.rbRadioButton);
+                        // RadioButton rb = (RadioButton) ((MainActivity) context).linearLayoutManager.getChildAt(lastSelectedPosition).findViewById(R.id.rbRadioButton);
                         RadioButton rb = (RadioButton) ((MainActivity) myRecyclerViewHolder.mRadioButton.getContext()).linearLayoutManager.getChildAt(lastSelectedPosition).findViewById(R.id.rbRadioButton);
                         rb.setChecked(false);
                     }
                         lastSelectedPosition = i;
                         myRecyclerViewHolder.mRadioButton.setChecked(true);
-
+                        final Intent intent = new Intent(context, StartButtonActivity.class);
+                        intent.putExtra("selected_route_name", routeDetailsFromFirestoreArrayList_.get(i).getRouteName());
+                        context.startActivity(intent);
                     }
             }
         });
@@ -63,5 +68,6 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
     public int getItemCount() {
         return routeDetailsFromFirestoreArrayList_.size();
     }
+
 }
 
