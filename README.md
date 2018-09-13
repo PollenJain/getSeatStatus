@@ -7,9 +7,9 @@ and displays it on the recycler view. When a new route is added in the *routes* 
 
 
 ### driver_interface_route_list_1.0.1 :
-i) Publishes the selected route and start time information to all the commuters for that route.
-ii) Able to retrieve stops for selected route from firestore.
-iii) Displays in recyclerview/cardview.
+i) Publishes the selected route and start time information to all the commuters for that route.<br>
+ii) Able to retrieve stops for selected route from firestore.<br>
+iii) Displays in recyclerview/cardview.<br>
 
 
 
