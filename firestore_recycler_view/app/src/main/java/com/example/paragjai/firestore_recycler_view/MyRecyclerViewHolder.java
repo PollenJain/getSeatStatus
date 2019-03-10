@@ -1,18 +1,20 @@
 package com.example.paragjai.firestore_recycler_view;
 
-import android.support.v7.widget.RecyclerView;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 public class MyRecyclerViewHolder extends RecyclerView.ViewHolder {
 
     public TextView mRouteName;
     public TextView mMorningStartTime;
     public RadioButton mRadioButton;
-    public int  lastSelectedPosition;
+    public int lastSelectedPosition;
 
     public MyRecyclerViewHolder(View itemView)
     {

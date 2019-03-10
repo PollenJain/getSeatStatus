@@ -1,6 +1,6 @@
 package com.example.paragjai.firestore_recycler_view;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.*;
 

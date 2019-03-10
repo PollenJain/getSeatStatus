@@ -1,158 +1,106 @@
 package com.example.paragjai.firestore_recycler_view;
-import android.app.Activity;
+
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.widget.RadioButton;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.Arrays;
+import java.util.List;
 
-public class MainActivity extends Activity {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
-    FirebaseFirestore db;
-    RecyclerView mRecyclerView;
-    ArrayList<RouteDetailsFromFirestore> routeDetailsList;
-    MyRecyclerViewAdapter myRecyclerViewAdapter;
-    LinearLayoutManager linearLayoutManager;
+public class MainActivity  extends AppCompatActivity {
+
+    private final int REQUEST_SIGNIN = 1000;
+    Button loginButton;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.splash_screen);
+        auth = FirebaseAuth.getInstance();
+        if(isUserLogin())//if the user is logged in already
+        {
+            loginUser(); // then take the user to next activity
+        }
+        loginButton = (Button) findViewById(R.id.login_button); //otherwise show the login button
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Configure which kind of login page you want to show [ we dont create the layout
+                //of this page, it is created by Firebase itself ]
+                List<AuthUI.IdpConfig> providers = Arrays.asList(
+                        new AuthUI.IdpConfig.PhoneBuilder().build()
+                );
 
-        routeDetailsList = new ArrayList<>();
-        setUpRecyclerView();
-        setUpFireBase();
-        //addTestDataToFirebase();
-        loadDataFromFirebase();
+                //Create the signIn activity provided by Firebase UI depending
+                //on the provider list that we have created.
+                startActivityForResult(
+                        AuthUI.getInstance()
+                                .createSignInIntentBuilder()
+                                .setAvailableProviders(providers)
+                                .build(),
+                        REQUEST_SIGNIN
+                );
+            }
+        });
     }
 
-    private void addTestDataToFirebase()
-    {
-        Map<String, String> dataMap = new HashMap<String, String>();
-        Random random = new Random();
-        final Integer for_name = random.nextInt(50);
-        final Integer for_status = random.nextInt(50);
-        dataMap.put("status", "try status : " + for_status);
-        dataMap.put("name", "try name : " + for_name);
 
-        db.collection("routes")
-                .add(dataMap)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>(){
-                    @Override
-                    public void onSuccess(DocumentReference documentReference)
-                    {
-                        Log.d("onSuccess called: ", "name: try name " + for_name + " status: try status " + for_status);
-                        Toast.makeText(MainActivity.this, "Added Test Data", Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private boolean isUserLogin() {
 
+        if(auth.getCurrentUser() != null)
+        {
+            return  true;
+        }
+        return false; //user is not logged in already
     }
 
-    private void loadDataFromFirebase()
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_SIGNIN)
+        {
+
+            if(resultCode == RESULT_OK)
+            {
+                loginUser();
+            }
+            else {
+                Toast.makeText(this, "Problem in authentication occurred. Try again.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void loginUser() {
+        Intent loginIntent = new Intent(MainActivity.this, SignIn.class);
+        startActivity(loginIntent);
+        finish();
+    }
+
+
+    public void signOut()
     {
-        if(routeDetailsList.size()>0)
-            routeDetailsList.clear();
-
-        /*get ALL documents in the "routes" collection*/
-        db.collection("routes")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task)
-                    {
+                    public void onComplete(@NonNull Task<Void> task) {
 
-                        if(task.isSuccessful())
-                        {
-                            Log.d("onComplete called", "task is successful: " );
-                            Integer i = 0;
-                            QuerySnapshot querySnapshot = task.getResult();
-
-                            if(querySnapshot.isEmpty())
-                            {
-                                Log.d("onComplete called", "no documents in collection");
-                            }
-                            else {
-                                String routeNameFromDoc;
-                                String mornStartTimeFromDoc;
-                                Log.d("onComplete called", querySnapshot.size() + " documents present in collection");
-                                for (DocumentSnapshot documentSnapshot : querySnapshot)
-                                {
-                                    i = i + 1;
-                                    Log.d("onComplete : " + i, "i :" + i);
-                                    Log.d("doc id: " + documentSnapshot.getId(), documentSnapshot.getData().toString());
-                                    routeNameFromDoc = documentSnapshot.getString("route_name");
-                                    mornStartTimeFromDoc = documentSnapshot.getString("morn_start_time");
-                                    Log.d("route_name from doc: ", routeNameFromDoc);
-                                    Log.d("mornStartTime from doc ", mornStartTimeFromDoc);
-                                    /*RouteDetailsFromFirestore ctor takes name first and then status*/
-                                    RouteDetailsFromFirestore routeDetailsFromFirestore = new RouteDetailsFromFirestore(routeNameFromDoc, mornStartTimeFromDoc);
-                                    routeDetailsList.add(routeDetailsFromFirestore);
-                                }
-
-                                Log.d("size of userArrayList: ", "is: " + routeDetailsList.size());
-                                /*As far as recycler view is concerned,
-                                  once we get the data in a list, we pass it to the recycler adapter ctor
-                                  and then set the adapter to the recycler view
-                                 */
-                                myRecyclerViewAdapter = new MyRecyclerViewAdapter(MainActivity.this, routeDetailsList);
-                                mRecyclerView.setAdapter(myRecyclerViewAdapter);
-                            }
-                        }
-                        else
-                        {
-                            Exception exception = task.getException();
-                            Log.d("loadDataFromFirebase: ", "exception occured: " + exception);
-                        }
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Problem occured", Toast.LENGTH_SHORT).show();
-                        Log.w("onFailure called : ", e.getMessage());
                     }
                 });
     }
-
-    private void setUpRecyclerView()
-    {
-        /*To add a divider after every item in the list :
-            https://www.youtube.com/watch?v=kSDLfxt_QZE
-         */
-        linearLayoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, linearLayoutManager.getOrientation());
-        mRecyclerView = findViewById(R.id.recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.addItemDecoration(dividerItemDecoration);
-    }
-
-    private void setUpFireBase()
-    {
-        db = FirebaseFirestore.getInstance();
-    }
-//public  void uncheck(int i){
-//        RadioButton rb = (RadioButton) linearLayoutManager.getChildAt(i).findViewById(R.id.rbRadioButton);
-//        rb.setChecked(false);
-//}
-
 }
+
+

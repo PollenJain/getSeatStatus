@@ -2,8 +2,8 @@ package com.example.paragjai.firestore_recycler_view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +12,10 @@ import android.widget.CompoundButton;
 import android.widget.RadioButton;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.cardview.widget.CardView;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHolder> {
 
@@ -25,6 +29,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
     {
         this.context = context;
         this.routeDetailsFromFirestoreArrayList_ = routeDetailsFromFirestoreArrayList;
+        lastSelectedPosition = -1;
     }
 
 
@@ -40,28 +45,39 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final MyRecyclerViewHolder myRecyclerViewHolder, final int i) {
+        String routeName = routeDetailsFromFirestoreArrayList_.get(i).getRouteName();
+        String[] routeNameArray = routeName.split("_");
+        String alteredRouteName = "";
+        for(String word: routeNameArray)
+        {
+            alteredRouteName += word+" ";
+        }
 
-        myRecyclerViewHolder.mRouteName.setText(routeDetailsFromFirestoreArrayList_.get(i).getRouteName());
+        myRecyclerViewHolder.mRouteName.setText(alteredRouteName);
         myRecyclerViewHolder.mMorningStartTime.setText(routeDetailsFromFirestoreArrayList_.get(i).getMornStartTime());
         Log.d("MyRecyclerViewAdapter: ", "lastSelectedPosition : " + myRecyclerViewHolder.lastSelectedPosition + ", position : " + i );
         //myRecyclerViewHolder.mRadioButton.setChecked(myRecyclerViewHolder.lastSelectedPosition == i);
         myRecyclerViewHolder.mRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Log.d("onCheckedChanged called", "b: " + b);
                 if(b) {
                     if (lastSelectedPosition != -1) {
-                        // RadioButton rb = (RadioButton) ((MainActivity) context).linearLayoutManager.getChildAt(lastSelectedPosition).findViewById(R.id.rbRadioButton);
-                        RadioButton rb = (RadioButton) ((MainActivity) myRecyclerViewHolder.mRadioButton.getContext()).linearLayoutManager.getChildAt(lastSelectedPosition).findViewById(R.id.rbRadioButton);
+                        //RadioButton rb = (RadioButton) ((MainActivityWithRoutesList) context).linearLayoutManager.getChildAt(lastSelectedPosition).findViewById(R.id.rbRadioButton);
+                        RadioButton rb = (RadioButton) ((MainActivityWithRoutesList) myRecyclerViewHolder.mRadioButton.getContext()).linearLayoutManager.getChildAt(lastSelectedPosition).findViewById(R.id.rbRadioButton);
                         rb.setChecked(false);
                     }
                         lastSelectedPosition = i;
                         myRecyclerViewHolder.mRadioButton.setChecked(true);
-                        final Intent intent = new Intent(context, StartButtonActivity.class);
+                        final Intent intent = new Intent(context, StartButtonActivityWithContinousLocationPublishing.class);
                         intent.putExtra("selected_route_name", routeDetailsFromFirestoreArrayList_.get(i).getRouteName());
                         context.startActivity(intent);
+
                     }
             }
         });
+
+
     }
 
     @Override

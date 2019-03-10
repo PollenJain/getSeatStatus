@@ -1,5 +1,7 @@
 package com.example.paragjai.firestore_recycler_view;
 
+import java.util.Map;
+
 public class StopDetailsFromFirestore {
 
     private String stop_name_;
@@ -14,6 +16,7 @@ public class StopDetailsFromFirestore {
     {
         this.stop_name_ = stop_name;
         this.expected_pickup_time_ = expected_pickup_time;
+
     }
 
     public String getStopName()
@@ -35,4 +38,5 @@ public class StopDetailsFromFirestore {
     {
         this.expected_pickup_time_ = expected_pickup_time;
     }
+
 }

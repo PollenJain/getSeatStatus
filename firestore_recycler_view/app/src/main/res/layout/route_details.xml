@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.cardview.widget.CardView android:id="@+id/card_view"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    card_view:cardBackgroundColor="@color/bgRowBackground"
+    card_view:cardCornerRadius="10dp"
+    card_view:cardElevation="5dp"
+    card_view:cardUseCompatPadding="true"
+    layout_height=""
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:id="@+id/view_foreground"
+        android:background="@android:color/white"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
 
     <TextView
         android:id="@+id/tvRouteName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-         />
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:text="SRR_South_C" />
 
     <TextView
         android:id="@+id/tvMorningStartTime"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="19dp"
+        android:text="8: 40am"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="30dp"
+         />
 
     <RadioButton
         android:id="@+id/rbRadioButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:layout_marginStart="8dp"
-        />
-</LinearLayout>
+        android:layout_width="27dp"
+        android:layout_height="54dp"
+         />
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

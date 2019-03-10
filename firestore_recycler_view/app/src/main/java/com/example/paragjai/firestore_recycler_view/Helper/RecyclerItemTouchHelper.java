@@ -1,14 +1,19 @@
 package com.example.paragjai.firestore_recycler_view.Helper;
 
 import android.graphics.Canvas;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+
+
+
+
 import android.view.View;
 
 import com.example.paragjai.firestore_recycler_view.MyRecyclerViewAdapterForStops;
 import com.example.paragjai.firestore_recycler_view.MyRecyclerViewHolderForStops;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
 
