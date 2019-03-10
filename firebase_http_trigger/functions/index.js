@@ -25,16 +25,26 @@ exports.hello = functions.https.onRequest((req, res)=>{
 
 exports.DriverStartedJourney = functions.https.onRequest((req, res)=>{
 
-    const stopName  = req.query.stopName;
-    const topicName = "/topics/"+stopName;
+    const routeName  = req.query.routeName;
+    const topicName = "/topics/"+routeName;
     console.log("topic Name:" + topicName);
     const dateAndTime = req.query.startTime;
     console.log("dateAndTime: " + dateAndTime);
-    const startTime = dateAndTime.split(" ")[3];
-	const payload = {
+    const date_and_time[] = dateAndTime.split(" ");
+    const startTime = date_and_time[3] + " " + date_and_time[4];
+    const latitude = req.query.latitude;
+    const longitude = req.query.longitude;
+    console.log("latitude: " + latitude + "longitude: " + longitude);
+
+    const payload = {
+        data:
+        {
+            latitude_ : latitude,
+            longitude_ : longitude
+        },
 		notification:
 		{
-			title : stopName,
+			title : routeName,
 			body  : "Started moving at " + startTime
 		}
 	};
